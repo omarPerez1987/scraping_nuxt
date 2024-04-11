@@ -27,19 +27,16 @@ const enviarURL = async () => {
 
 
 <template>
-  <UDashboardCard 
-    title="Bienvenido" 
-    description="vamos a raspar los datos de Linkedin"
+  <UDashboardCard title="Bienvenido" description="vamos a raspar los datos de Linkedin"
     icon="i-heroicons-computer-desktop">
 
     <div class="flex gap-5 mt-10">
       <UInput v-model="url" color="primary" variant="outline" type="text"
-      placeholder="Inserta la URL del puesto de LinkedIn..." class="input_linkedin" />
+        placeholder="Inserta la URL del puesto de LinkedIn..." class="input_linkedin" />
       <UButton @click="enviarURL">Enviar</UButton>
     </div>
-    
+
   </UDashboardCard>
-  <UProgress />
 </template>
 
 

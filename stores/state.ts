@@ -10,7 +10,6 @@ export const useStateData = defineStore("stateData", {
   actions: {
     addOrders(data:any) {
       this.data = this.data.concat(data);
-      console.log(this.data)
     },
   },
 });

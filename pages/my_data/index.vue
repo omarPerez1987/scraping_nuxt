@@ -4,40 +4,17 @@ import { useStateData } from '~/stores/state'
 
 const store = useStateData()
 const data = ref([])
+const isOpen = ref(false)
 
 watch(() => {
   data.value = store.getData
+  console.log(data.value)
 })
-
-const solicitud = ref({
-  fechaAplicacion: '',
-  posicionOferta: 'Fullstack',
-  recruiter: '',
-  plataforma: 'linkedin',
-  empresa: '',
-  estadoFase: 'solicitado',
-  ultimoContacto: '',
-  emailRecruiter: '',
-  comentarios: ''
-})
-
-
-const onSubmit = () => {
-  store.addOrders(solicitud.value)
-  solicitud.value = {
-    fechaAplicacion: '',
-    posicionOferta: 'Fullstack',
-    recruiter: '',
-    plataforma: 'linkedin',
-    empresa: '',
-    estadoFase: 'solicitado',
-    ultimoContacto: '',
-    emailRecruiter: '',
-    comentarios: ''
-  }
-}
 
 const columns = [{
+  key: 'id',
+  label: 'ID',
+}, {
   key: 'fechaAplicacion',
   label: 'Fecha de aplicación',
   sortable: true
@@ -67,61 +44,57 @@ const columns = [{
 {
   key: 'comentarios',
   label: 'Comentarios'
-},]
+}, {
+  key: 'actions'
+}]
 
-const position_offer = ['Fullstack', 'Frontend', 'Backend']
-const platform = ['Linkedin', 'Infojobs', 'Indeed', 'Autocandidatura', 'Oferta Oxygen', 'Otras']
-const phase_state = ['Solicitado', 'Abierto CV', 'Entrevista con RRHH', 'Prueba técnica', 'Entrevista final', 'Rechazado', 'No responden', 'Firma de contrato']
+const items = (row) => [
+  [{
+    label: 'Edit',
+    icon: 'i-heroicons-pencil-square-20-solid',
+    click: () => console.log('Edit', row.id)
+  }], [{
+    label: 'Move',
+    icon: 'i-heroicons-arrow-right-circle-20-solid'
+  }], [{
+    label: 'Delete',
+    icon: 'i-heroicons-trash-20-solid'
+  }]
+]
+
+const page = ref(1)
+const pageCount = 12
+
+const rows = computed(() => {
+  return data.value.slice((page.value - 1) * pageCount, (page.value) * pageCount)
+})
 
 </script>
 
 <template>
-  <main class="flex justify-around p-12">
-    <section class="w-80">
-      <h3 class="flex items-center gap-2 h-20 text-2xl ">
-        <UIcon name="i-heroicons-queue-list" />
-        Formulario
-      </h3>
-      <UForm class="flex flex-col gap-3" @submit="onSubmit">
-        <UFormGroup for="fechaAplicacion" label="Fecha de aplicación" required>
-          <UInput v-model="solicitud.fechaAplicacion" type="date" />
-        </UFormGroup>
-        <UFormGroup label="Posición oferta" required>
-          <USelect v-model="solicitud.posicionOferta" :options="position_offer" />
-        </UFormGroup>
-        <UFormGroup for="recruiter" label="Recruiter" hint="Optional">
-          <UInput v-model="solicitud.recruiter" type="text" />
-        </UFormGroup>
-        <UFormGroup for="plataforma" label="Plataforma" required>
-          <USelect v-model="solicitud.plataforma" :options="platform" />
-        </UFormGroup>
-        <UFormGroup for="empresa" label="Empresa" required>
-          <UInput v-model="solicitud.empresa" type="text" />
-        </UFormGroup>
-        <UFormGroup for="estadoFase" label="Estado de la fase" required>
-          <USelect v-model="solicitud.estadoFase" :options="phase_state" />
-        </UFormGroup>
-        <UFormGroup for="ultimoContacto" label="Último contacto" required>
-          <UInput v-model="solicitud.ultimoContacto" type="date" />
-        </UFormGroup>
-        <UFormGroup for="emailRecruiter" label="Email Recruiter" hint="Optional">
-          <UInput v-model="solicitud.emailRecruiter" type="text" />
-        </UFormGroup>
-        <UFormGroup for="comentarios" label="Comentarios" hint="Optional">
-          <UTextarea v-model="solicitud.comentarios" cols="30" rows="5" />
-        </UFormGroup>
-        <UButton type="submit" class="mt-5">Enviar</UButton>
-      </UForm>
-    </section>
-
+  <main class="p-12">
+    <UButton class="mb-5" label="Open Form" @click="isOpen = true" />
     <section>
       <h3 class="flex items-center gap-2 h-20 text-2xl ">
         <UIcon name="i-heroicons-queue-list" />
         Data
       </h3>
-      <UTable :columns="columns" :rows="data" loading
+      <UTable :columns="columns" :rows="rows" loading
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
-        :progress="{ color: 'primary', animation: 'carousel' }" />
+        :progress="{ color: 'primary', animation: 'carousel' }">
+        <template #actions-data="{ row }">
+          <UDropdown :items="items(row)">
+            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          </UDropdown>
+        </template>
+      </UTable>
+
+      <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
+        <UPagination v-model="page" :page-count="pageCount" :total="data.length" />
+      </div>
+      <UModal v-model="isOpen" :transition="false">
+        <FormData />
+      </UModal>
     </section>
 
   </main>
