@@ -1,6 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useStateData } from '~/stores/state'
 
+const store = useStateData()
+const data = ref([])
+
+watch(() => {
+  data.value = store.getData
+})
 
 const solicitud = ref({
   fechaAplicacion: '',
@@ -14,13 +21,12 @@ const solicitud = ref({
   comentarios: ''
 })
 
-const solicitudes = ref([])
 
 const onSubmit = () => {
-  solicitudes.value.push({ ...solicitud.value })
+  store.addOrders(solicitud.value)
   solicitud.value = {
     fechaAplicacion: '',
-    posicion_Oferta: 'Fullstack',
+    posicionOferta: 'Fullstack',
     recruiter: '',
     plataforma: 'linkedin',
     empresa: '',
@@ -52,7 +58,8 @@ const columns = [{
   label: 'Estado de la fase'
 }, {
   key: 'ultimoContacto',
-  label: 'Último Contacto'
+  label: 'Último Contacto',
+  sortable: true
 }, {
   key: 'emailRecruiter',
   label: 'Email Recruiter'
@@ -112,14 +119,11 @@ const phase_state = ['Solicitado', 'Abierto CV', 'Entrevista con RRHH', 'Prueba 
         <UIcon name="i-heroicons-queue-list" />
         Data
       </h3>
-      <UTable :columns="columns" :rows="solicitudes" loading
+      <UTable :columns="columns" :rows="data" loading
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
-        :progress="{ color: 'primary', animation: 'carousel' }" 
-        
-        />
+        :progress="{ color: 'primary', animation: 'carousel' }" />
     </section>
 
   </main>
 
 </template>
-
