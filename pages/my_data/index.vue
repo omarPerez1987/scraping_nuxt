@@ -4,11 +4,9 @@ import { useStateData } from '~/stores/state'
 
 const store = useStateData()
 const data = ref([])
-const isOpen = ref(false)
 
 watch(() => {
   data.value = store.getData
-  console.log(data.value)
 })
 
 const columns = [{
@@ -73,7 +71,7 @@ const rows = computed(() => {
 
 <template>
   <main class="p-12">
-    <UButton class="mb-5" label="Open Form" @click="isOpen = true" />
+    <UButton class="mb-5" label="Open Form" @click="store.setOpen(true)" />
     <section>
       <h3 class="flex items-center gap-2 h-20 text-2xl ">
         <UIcon name="i-heroicons-queue-list" />
@@ -92,7 +90,7 @@ const rows = computed(() => {
       <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
         <UPagination v-model="page" :page-count="pageCount" :total="data.length" />
       </div>
-      <UModal v-model="isOpen" :transition="false">
+      <UModal v-model="store.open" :transition="false">
         <FormData />
       </UModal>
     </section>

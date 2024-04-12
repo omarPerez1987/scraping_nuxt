@@ -20,6 +20,7 @@ const solicitud = ref({
 
 const onSubmit = () => {
     store.addOrders(solicitud.value)
+    store.setOpen(false);
 }
 
 const position_offer = ['Fullstack', 'Frontend', 'Backend']
